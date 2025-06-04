@@ -12,6 +12,13 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# My custom
+bun.lock
+tsconfig.json
+tsconfig.build.json
+nest-cli.json
+.prettierrc
+
 # OS
 .DS_Store
 
