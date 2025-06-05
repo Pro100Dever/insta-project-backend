@@ -1,23 +1,23 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma.service";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userS: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   getUsers() {
     return this.prisma.user.findMany();
   }
 
-  createUser(name: string, email: string) {
-    if (!name || !email) {
-      throw new Error("Name and email are required");
-    }
-    return this.prisma.user.create({
-      data: {
-        name,
-        email,
-      },
+  async createUser(name: string, email: string) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
     });
+
+    if (existingUser) {
+      throw new BadRequestException("User with this email already exists");
+    }
+
+    return this.prisma.user.create({ data: { name, email } });
   }
 }
