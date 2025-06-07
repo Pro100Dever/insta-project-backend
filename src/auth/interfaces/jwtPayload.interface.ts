@@ -1,5 +1,4 @@
 import { UUID } from "crypto";
-import { Request } from "express";
 
 export interface JwtPayload {
   sub: number;
@@ -12,8 +11,4 @@ export interface IRegUser {
   username: string;
   password?: string;
   profile?: { photo?: string };
-}
-
-export interface AuthReq extends Request {
-  user: IRegUser;
 }

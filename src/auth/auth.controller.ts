@@ -12,7 +12,11 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
 import { CreateAuthDto, NewPassBody } from "./dto/create-auth.dto";
-import { AuthReq } from "./interfaces/jwtPayload.interface";
+import { IRegUser } from "./interfaces/jwtPayload.interface";
+
+interface AuthReq extends Request {
+  user: IRegUser;
+}
 
 @Controller("auth")
 export class AuthController {
