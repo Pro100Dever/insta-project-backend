@@ -4,6 +4,7 @@ import { JwtModule } from "@nestjs/jwt"; // Модуль для работы с 
 import { PassportModule } from "@nestjs/passport"; // Модуль для интеграции Passport.js (авторизация и аутентификация)
 import { AuthController } from "./auth.controller"; // Контроллер для роутов аутентификации (например, login)
 import { AuthService } from "./auth.service"; // Сервис с логикой аутентификации (валидация пользователей, генерация токенов и т.п.)
+import { MailService } from "./mail/mail.service";
 import { JwtStrategy } from "./strategies/jwt.strategies"; // JWT стратегия для проверки JWT токенов
 import { LocalStrategy } from "./strategies/local.strategies"; // Локальная стратегия для логина через username/password (если нужна)
 
@@ -26,6 +27,7 @@ import { LocalStrategy } from "./strategies/local.strategies"; // Локальн
   ],
 
   providers: [
+    MailService,
     AuthService, // Сервис с логикой аутентификации
     JwtStrategy, // Стратегия проверки JWT токенов
     LocalStrategy, // Стратегия локальной аутентификации (если используется)

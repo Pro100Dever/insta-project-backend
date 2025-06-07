@@ -27,3 +27,21 @@ export class CreateAuthDto {
   })
   password: string;
 }
+export class LoginData {
+  @IsString()
+  @IsNotEmpty()
+  login: string; // email or username
+  @IsNotEmpty()
+  password: string;
+}
+export class NewPassBody {
+  @IsString()
+  token: string;
+  @IsNotEmpty()
+  @Length(8, 50)
+  @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/, {
+    message:
+      "Пароль должен содержать минимум 8 символов, хотя бы одну заглавную букву, одну цифру и один специальный символ",
+  })
+  newPassword: string;
+}
