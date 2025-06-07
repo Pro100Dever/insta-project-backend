@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
-import { CommentModule } from "./comment/comment.module";
 import { PostModule } from "./post/post.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProfileModule } from "./profile/profile.module";
@@ -16,7 +15,6 @@ import { UserModule } from "./user/user.module";
     ProfileModule,
     AuthModule,
     UploadModule,
-    CommentModule,
     ConfigModule.forRoot({
       isGlobal: true, // Доступен во всех модулях
     }),

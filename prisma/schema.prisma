@@ -34,7 +34,7 @@ model User{
 model Profile {
   id     String   @id @default(uuid())
   userId String   @unique  // ID владельца профиля (уникально — 1 юзер = 1 профиль)
-  photo String
+  photo String?
   website String?
   about String?
 
