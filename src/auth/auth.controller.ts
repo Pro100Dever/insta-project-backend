@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
-import { CreateAuthDto, NewPassBody } from "./dto/create-auth.dto";
+import { CreateAuthDto, NewPassBodyDto } from "./dto/create-auth.dto";
 import { IRegUser } from "./interfaces/jwtPayload.interface";
 
 interface AuthReq extends Request {
@@ -32,13 +32,13 @@ export class AuthController {
 
   @UseGuards(AuthGuard("local"))
   @Post("/login")
-  @UsePipes(new ValidationPipe())
   login(@Request() req: AuthReq) {
     // req.user пришел из LocalStrategy.validate
     return this.authService.login(req.user);
   }
 
   @Post("reset-password-request")
+  @UsePipes(new ValidationPipe())
   async resetPasswordRequest(@Body("email") email: string) {
     // Логика создания токена и отправки письма
     const token = await this.authService.generatePasswordResetToken(email); // Генерация токена
@@ -49,7 +49,7 @@ export class AuthController {
 
   @Post("reset-password")
   @UsePipes(new ValidationPipe())
-  async resetPassword(@Body() body: NewPassBody) {
+  async resetPassword(@Body() body: NewPassBodyDto) {
     return this.authService.resetPassword(body.token, body.newPassword);
   }
 }

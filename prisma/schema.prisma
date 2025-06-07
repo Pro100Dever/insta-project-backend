@@ -41,7 +41,7 @@ model Profile {
   website String?
   about String?
 
-  user   User  @relation(fields: [userId], references: [id])  // Связь 1-к-1 с юзером
+  user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь 1-к-1 с юзером
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -52,10 +52,10 @@ model Profile {
 model Follow {
   id           String   @id @default(uuid())
 
-  follower     User     @relation("Following", fields: [followerId], references: [id])  // Тот, кто подписывается
+  follower     User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)  // Тот, кто подписывается
   followerId   String   @map("follower_id")
 
-  following    User     @relation("Followers", fields: [followingId], references: [id])   // На кого подписываются
+  following    User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)   // На кого подписываются
   followingId  String   @map("following_id")
 
   createdAt    DateTime @default(now()) @map("created_at")
@@ -69,7 +69,7 @@ model Post{
   text String 
   mediaUrl  String? 
 
-  author User @relation(fields: [authorId], references: [id])
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String @map("author_id")
 
   comments Comment[] // Комментарии под постом
@@ -85,13 +85,13 @@ model Comment{
   id String @id @default(uuid())
   text String 
 
-  author User @relation(fields: [authorId], references: [id])
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String @map("author_id") // Кто написал комментарий
 
-  post   Post    @relation(fields: [postId], references: [id])
+  post   Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String  @map("post_id")  // К какому посту относится
 
-  parent    Comment?  @relation("CommentToReplies", fields: [parentId], references: [id]) 
+  parent    Comment?  @relation("CommentToReplies", fields: [parentId], references: [id], onDelete: Cascade) 
   parentId  String?   @map("parent_id") // Родительский комментарий (если это ответ)
 
   replies   Comment[] @relation("CommentToReplies")   // Ответы на этот комментарий
@@ -105,10 +105,10 @@ model Comment{
 
 model Like {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @map("user_id")  // Кто поставил лайк
 
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String   @map("post_id")  // Какому посту
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -119,10 +119,10 @@ model Like {
 
 model CommentLike {
   id         String    @id @default(uuid())
-  user       User      @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String    @map("user_id")  // Кто лайкнул комментарий
 
-  comment    Comment   @relation(fields: [commentId], references: [id])
+  comment    Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId  String    @map("comment_id") // Какой комментарий
 
   createdAt  DateTime  @default(now()) @map("created_at")

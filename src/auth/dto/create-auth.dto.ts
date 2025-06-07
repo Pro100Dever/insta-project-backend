@@ -27,14 +27,8 @@ export class CreateAuthDto {
   })
   password: string;
 }
-export class LoginData {
-  @IsString()
-  @IsNotEmpty()
-  login: string; // email or username
-  @IsNotEmpty()
-  password: string;
-}
-export class NewPassBody {
+
+export class NewPassBodyDto {
   @IsString()
   @IsNotEmpty()
   token: string;

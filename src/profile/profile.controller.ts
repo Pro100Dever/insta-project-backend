@@ -1,34 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ProfileService } from './profile.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Request,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { JwtPayload } from "./../../dist/auth/interfaces/jwtPayload.interface.d";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
+import { IProfile } from "./interfaces/profile.interface";
+import { ProfileService } from "./profile.service";
 
-@Controller('profile')
+interface AuthReq extends Request {
+  user: JwtPayload; // или какой у тебя тип payload
+}
+
+@Controller("profile")
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Post()
-  create(@Body() createProfileDto: CreateProfileDto) {
-    return this.profileService.create(createProfileDto);
+  @UseGuards(AuthGuard("jwt"))
+  @Get("me")
+  findMe(@Request() req: AuthReq): Promise<IProfile> {
+    return this.profileService.findOne(req.user);
   }
 
-  @Get()
-  findAll() {
-    return this.profileService.findAll();
+  @UseGuards(AuthGuard("jwt"))
+  @Patch("me")
+  @UsePipes(new ValidationPipe())
+  update(
+    @Request() req: AuthReq,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<IProfile> {
+    return this.profileService.update(req.user, dto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.profileService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profileService.update(+id, updateProfileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.profileService.remove(+id);
+  @UseGuards(AuthGuard("jwt"))
+  @Delete("me")
+  async remove(@Request() req: AuthReq) {
+    await this.profileService.remove(req.user);
+    return { message: "You'r account was deleted" };
   }
 }
