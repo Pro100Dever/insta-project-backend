@@ -36,6 +36,7 @@ export class LoginData {
 }
 export class NewPassBody {
   @IsString()
+  @IsNotEmpty()
   token: string;
   @IsNotEmpty()
   @Length(8, 50)

@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -22,46 +21,36 @@ export class AuthService {
   ) {} // инжекция клиента Prisma
 
   async register(user: CreateAuthDto) {
-    try {
-      const { email, fullName, username } = user;
+    const { email, fullName, username } = user;
 
-      // Проверяем, существует ли пользователь с таким email или username
-      const existingUser = await this.prisma.user.findFirst({
-        where: {
-          OR: [{ email }, { username }],
-        },
-      });
-      if (existingUser) {
-        throw new ConflictException(
-          "Пользователь с таким email или username уже существует",
-        );
-      }
-
-      const hashPas: string = await bcrypt.hash(user.password, 10);
-      await this.prisma.user.create({
-        data: {
-          email,
-          fullName,
-          username,
-          password: hashPas,
-          profile: {
-            create: {
-              photo: null,
-              website: null,
-              about: null,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      // Ловим любые ошибки, кроме конфликтов, и кидаем общий InternalServerError
-      if (error instanceof ConflictException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(
-        "Ошибка при регистрации пользователя",
+    // Проверяем, существует ли пользователь с таким email или username
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
+    });
+    if (existingUser) {
+      throw new ConflictException(
+        "A user with this email or username already exists",
       );
     }
+
+    const hashPas: string = await bcrypt.hash(user.password, 10);
+    await this.prisma.user.create({
+      data: {
+        email,
+        fullName,
+        username,
+        password: hashPas,
+        profile: {
+          create: {
+            photo: null,
+            website: null,
+            about: null,
+          },
+        },
+      },
+    });
   }
 
   async validateUser(login: string, password: string) {
@@ -111,7 +100,7 @@ export class AuthService {
   async generatePasswordResetToken(email: string): Promise<string> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      throw new NotFoundException("Пользователь с таким email не найден");
+      throw new NotFoundException("User with this email not found");
     }
 
     // Генерируем токен — 32 байта в hex, например
@@ -144,7 +133,7 @@ export class AuthService {
 
     if (!user) {
       throw new BadRequestException(
-        "Токен сброса пароля недействителен или истек",
+        "Password reset token is invalid or expired",
       );
     }
 
@@ -158,7 +147,8 @@ export class AuthService {
         resetTokenExp: null,
       },
     });
+    await this.mailService.confirmResetPasswordEmail(user.email);
 
-    return { message: "Пароль успешно изменён" };
+    return { message: "Password successfully changed" };
   }
 }
