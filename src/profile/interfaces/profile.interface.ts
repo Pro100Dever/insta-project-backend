@@ -1,9 +1,9 @@
 export interface IProfile {
   id: string;
-  fullName?: string;
+  fullName: string;
   username: string;
   profile?: {
-    photo?: string | null;
+    photo?: string;
     website?: string | null;
     about?: string | null;
   };
@@ -16,7 +16,7 @@ export interface IUpdateProfile {
   username?: string;
   profile?: {
     photo?: string;
-    website?: string;
-    about?: string;
+    website?: string | null;
+    about?: string | null;
   };
 }

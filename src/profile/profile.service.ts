@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { JwtPayload } from "src/auth/interfaces/jwtPayload.interface";
+import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
 import { PrismaService } from "src/prisma/prisma.service";
 import { IUpdateProfile } from "./interfaces/profile.interface";
 
@@ -11,7 +11,7 @@ import { IUpdateProfile } from "./interfaces/profile.interface";
 export class ProfileService {
   constructor(private prisma: PrismaService) {}
 
-  async findMe(user: JwtPayload) {
+  async findMe(user: JwtPl) {
     const userId = user.sub;
     const myProfile = await this.prisma.user.findUnique({
       where: {
@@ -48,7 +48,7 @@ export class ProfileService {
     };
   }
 
-  async update(user: JwtPayload, dto: IUpdateProfile) {
+  async update(user: JwtPl, dto: IUpdateProfile) {
     const userId = user.sub;
 
     // Проверка существования пользователя
@@ -96,6 +96,7 @@ export class ProfileService {
       where: { id: userId },
       select: {
         id: true,
+        fullName: true,
         username: true,
         profile: {
           select: {
@@ -115,7 +116,7 @@ export class ProfileService {
     };
   }
 
-  async remove(user: JwtPayload) {
+  async remove(user: JwtPl) {
     const userId = user.sub;
     await this.prisma.user.delete({
       where: {

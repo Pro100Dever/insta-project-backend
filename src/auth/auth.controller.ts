@@ -12,9 +12,9 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
 import { CreateAuthDto, NewPassBodyDto } from "./dto/create-auth.dto";
-import { IRegUser } from "./interfaces/jwtPayload.interface";
+import { IRegUser } from "./interfaces/jwtPl.interface";
 
-interface AuthReq extends Request {
+export interface IAuthReq extends Request {
   user: IRegUser;
 }
 
@@ -32,7 +32,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard("local"))
   @Post("/login")
-  login(@Request() req: AuthReq) {
+  login(@Request() req: IAuthReq) {
     // req.user пришел из LocalStrategy.validate
     return this.authService.login(req.user);
   }

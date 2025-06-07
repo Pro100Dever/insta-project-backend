@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { AuthService } from "../auth.service";
-import { JwtPayload } from "../interfaces/jwtPayload.interface";
+import { JwtPl } from "../interfaces/jwtPl.interface";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   // Метод validate вызывается если токен валиден
-  validate(payload: JwtPayload) {
+  validate(payload: JwtPl) {
     // payload — это данные из токена (например, userId и email)
     // Можно проверить пользователя в базе, но часто просто возвращаем payload
     return { userId: payload.sub, username: payload.username };

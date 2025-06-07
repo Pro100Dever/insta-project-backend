@@ -10,13 +10,12 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { JwtPayload } from "./../../dist/auth/interfaces/jwtPayload.interface.d";
+import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
-import { IProfile } from "./interfaces/profile.interface";
 import { ProfileService } from "./profile.service";
 
-interface AuthReq extends Request {
-  user: JwtPayload; // или какой у тебя тип payload
+export interface IProfileReq extends Request {
+  user: JwtPl;
 }
 
 @Controller("profile")
@@ -25,23 +24,20 @@ export class ProfileController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
-  findMe(@Request() req: AuthReq): Promise<IProfile> {
-    return this.profileService.findOne(req.user);
+  findMe(@Request() req: IProfileReq) {
+    return this.profileService.findMe(req.user);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Patch("me")
   @UsePipes(new ValidationPipe())
-  update(
-    @Request() req: AuthReq,
-    @Body() dto: UpdateProfileDto,
-  ): Promise<IProfile> {
+  update(@Request() req: IProfileReq, @Body() dto: UpdateProfileDto) {
     return this.profileService.update(req.user, dto);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Delete("me")
-  async remove(@Request() req: AuthReq) {
+  async remove(@Request() req: IProfileReq) {
     await this.profileService.remove(req.user);
     return { message: "You'r account was deleted" };
   }

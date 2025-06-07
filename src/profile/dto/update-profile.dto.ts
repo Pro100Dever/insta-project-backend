@@ -4,14 +4,12 @@ import { IsOptional, IsString, Length, ValidateNested } from "class-validator";
 class UpdateProfileDataDto {
   @IsOptional()
   @IsString()
-  photo: string | null;
+  photo: string;
 
   @IsOptional()
-  @IsString()
   website: string | null;
 
   @IsOptional()
-  @IsString()
   about: string | null;
 }
 

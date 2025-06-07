@@ -9,7 +9,7 @@ import * as bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
 import { PrismaService } from "../prisma/prisma.service"; // предположим, у тебя есть PrismaService
 import { CreateAuthDto } from "./dto/create-auth.dto";
-import { IRegUser } from "./interfaces/jwtPayload.interface";
+import { IRegUser } from "./interfaces/jwtPl.interface";
 import { MailService } from "./mail/mail.service";
 
 @Injectable()
