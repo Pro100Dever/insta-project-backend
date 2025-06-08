@@ -3,7 +3,7 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { MulterFile } from "./interfaces/upload-file.interface";
+import { MulterFile } from "./upload.controller";
 
 @Injectable()
 export class UploadService {

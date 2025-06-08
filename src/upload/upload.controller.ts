@@ -6,8 +6,16 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { MulterFile } from "./interfaces/upload-file.interface";
 import { UploadService } from "./upload.service";
+
+export interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+}
 
 @Controller("upload")
 export class UploadController {
