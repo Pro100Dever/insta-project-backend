@@ -25,14 +25,14 @@ export class ProfileController {
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
   async findMe(@Request() req: IProfileReq) {
-    return await this.profileService.findMe(req.user);
+    return this.profileService.findMe(req.user);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Patch("me")
   @UsePipes(new ValidationPipe())
   async update(@Request() req: IProfileReq, @Body() dto: UpdateProfileDto) {
-    return await this.profileService.update(req.user, dto);
+    return this.profileService.update(req.user, dto);
   }
 
   @UseGuards(AuthGuard("jwt"))

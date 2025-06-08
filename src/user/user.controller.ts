@@ -1,13 +1,23 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Param, ParseUUIDPipe, Query } from "@nestjs/common";
 
 import { UserService } from "./user.service";
 
-@Controller("user") // базовый путь для всего контроллера
+@Controller("users") // базовый путь для всего контроллера
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get(":id")
+  async getUserById(@Param("id", new ParseUUIDPipe()) id: string) {
+    return await this.userService.findById(id);
+  }
+
   @Get()
-  findAll() {
-    return this.userService.getUsers();
+  async searchUsers(
+    @Query("search") search: string,
+    @Query("limit") limit?: string,
+  ) {
+    if (!search) return [];
+    const limitNum = limit ? parseInt(limit) : 10;
+    return this.userService.searchUsers(search, limitNum);
   }
 }

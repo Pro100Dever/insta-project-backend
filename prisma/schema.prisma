@@ -66,8 +66,8 @@ model Follow {
 
 model Post{
   id String @id @default(uuid())
-  text String 
-  mediaUrl  String? 
+  text String?
+  mediaUrl  String
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String @map("author_id")
