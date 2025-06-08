@@ -8,6 +8,8 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { ProfileModule } from "./profile/profile.module";
 import { UploadModule } from "./upload/upload.module";
 import { UserModule } from "./user/user.module";
+import { NotificationModule } from './notification/notification.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { UserModule } from "./user/user.module";
       isGlobal: true, // Доступен во всех модулях
     }),
     FollowModule,
+    NotificationModule,
+    CommentModule,
   ],
 })
 export class AppModule {}

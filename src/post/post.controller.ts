@@ -11,6 +11,8 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -56,6 +58,7 @@ export class PostController {
   @UseGuards(AuthGuard("jwt"))
   @UseInterceptors(FileInterceptor("file"))
   @Post()
+  @UsePipes(new ValidationPipe())
   async createPost(
     @Body() postDto: CreatePostDto,
     @Request() req: IPostReq,
@@ -72,6 +75,7 @@ export class PostController {
   @UseGuards(AuthGuard("jwt"))
   @UseInterceptors(FileInterceptor("file"))
   @Patch(":id")
+  @UsePipes(new ValidationPipe())
   async updatePost(
     @UploadedFile() file: MulterFile,
     @Param("id", new ParseUUIDPipe()) id: string,
