@@ -14,7 +14,7 @@ import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { ProfileService } from "./profile.service";
 
-export interface IProfileReq extends Request {
+interface IProfileReq extends Request {
   user: JwtPl;
 }
 
