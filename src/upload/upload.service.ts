@@ -72,4 +72,22 @@ export class UploadService {
       stream.end(file.buffer);
     });
   }
+
+  async deleteFile(fileUrl: string): Promise<void> {
+    // Извлечь имя файла из полного URL
+    // Обычно URL имеет вид: https://storage.googleapis.com/{bucket}/{filename}
+    // Нужно выделить только {filename}
+    const url = new URL(fileUrl);
+    const pathname = url.pathname; // например, /bucket-name/path/to/file.jpg
+    // Получим имя файла относительно bucket (без первого слэша и имени бакета)
+    const filePath = pathname.split("/").slice(2).join("/");
+    if (!filePath) {
+      throw new Error("Невозможно определить имя файла для удаления");
+    }
+    const bucket = this.storage.bucket(this.bucketName);
+    const file = bucket.file(filePath);
+
+    // Удаляем файл из GCS
+    await file.delete();
+  }
 }

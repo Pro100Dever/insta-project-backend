@@ -4,10 +4,16 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
+import { UploadService } from "../upload/upload.service";
+import { ICreatePost, IUpdatePost } from "./interfaces/post.interfaces";
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly uploadService: UploadService,
+  ) {}
+
   async getAllPosts() {
     return await this.prisma.post.findMany({
       orderBy: { createdAt: "desc" },
@@ -93,6 +99,41 @@ export class PostService {
     return post;
   }
 
+  async createPost(data: ICreatePost) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: data.authorId },
+    });
+    if (!post) {
+      throw new NotFoundException("Пост не найден");
+    }
+    if (post.authorId !== data.authorId) {
+      throw new ForbiddenException("Вы не можете удалить чужой пост");
+    }
+    return this.prisma.post.create({ data });
+  }
+
+  async updatePost(postId: string, postDto: IUpdatePost, userId: string) {
+    const post = await this.prisma.post.findUnique({ where: { id: postId } });
+    if (!post) {
+      throw new NotFoundException("Пост не найден");
+    }
+    if (post.authorId !== userId) {
+      throw new ForbiddenException("Вы не можете редактировать чужой пост");
+    }
+    if (
+      postDto.mediaUrl &&
+      post.mediaUrl &&
+      post.mediaUrl !== postDto.mediaUrl
+    ) {
+      // удалить старый файл из облака
+      await this.uploadService.deleteFile(post.mediaUrl);
+    }
+    return this.prisma.post.update({
+      where: { id: postId },
+      data: postDto,
+    });
+  }
+
   async deletePost(postId: string, userId: string) {
     const post = await this.prisma.post.findUnique({
       where: { id: postId },
@@ -106,6 +147,7 @@ export class PostService {
     if (post.authorId !== userId) {
       throw new ForbiddenException("You are not allowed to delete this post");
     }
+    await this.uploadService.deleteFile(post.mediaUrl);
     await this.prisma.post.delete({ where: { id: postId } });
   }
 

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -7,10 +8,17 @@ import {
   Patch,
   Post,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
+import { MulterFile } from "src/upload/interfaces/upload-file.interface";
+import { UploadService } from "../upload/upload.service";
+import { CreatePostDto } from "./dto/create-post.dto";
+import { UpdatePostDto } from "./dto/update-post.dto";
 import { PostService } from "./post.service";
 
 interface IPostReq extends Request {
@@ -19,7 +27,10 @@ interface IPostReq extends Request {
 
 @Controller("posts")
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Get()
   async getAllPosts() {
@@ -32,18 +43,43 @@ export class PostController {
   }
 
   @UseGuards(AuthGuard("jwt"))
+  @UseInterceptors(FileInterceptor("file"))
   @Post()
-  createPost() {
-    return;
+  async createPost(
+    @Body() postDto: CreatePostDto,
+    @Request() req: IPostReq,
+    @UploadedFile() file: MulterFile,
+  ) {
+    const mediaUrl = await this.uploadService.uploadFile(file);
+    return this.postService.createPost({
+      ...postDto,
+      mediaUrl,
+      authorId: req.user.sub,
+    });
   }
 
   @UseGuards(AuthGuard("jwt"))
+  @UseInterceptors(FileInterceptor("file"))
   @Patch(":id")
-  updatePost() {
-    return;
+  async updatePost(
+    @UploadedFile() file: MulterFile,
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @Body() postDto: UpdatePostDto,
+    @Request() req: IPostReq,
+  ) {
+    let mediaUrl: string | undefined;
+    if (file) {
+      mediaUrl = await this.uploadService.uploadFile(file);
+    }
+    return this.postService.updatePost(
+      id,
+      { ...postDto, ...(mediaUrl ? { mediaUrl } : {}) },
+      req.user.sub,
+    );
   }
 
   @UseGuards(AuthGuard("jwt"))
+  @UseInterceptors(FileInterceptor("file"))
   @Delete(":id")
   async deletePost(
     @Param("id", new ParseUUIDPipe()) id: string,
