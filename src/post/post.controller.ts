@@ -32,14 +32,18 @@ export class PostController {
     private readonly uploadService: UploadService,
   ) {}
 
+  @UseGuards(AuthGuard("jwt"))
   @Get()
-  async getAllPosts() {
-    return this.postService.getAllPosts();
+  async getAllPosts(@Request() req: IPostReq) {
+    return this.postService.getAllPosts(req.user?.sub);
   }
 
   @Get(":id")
-  async getPostById(@Param("id", new ParseUUIDPipe()) id: string) {
-    return this.postService.getPostById(id);
+  async getPostById(
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @Request() req: IPostReq,
+  ) {
+    return this.postService.getPostById(id, req.user?.sub);
   }
 
   @UseGuards(AuthGuard("jwt"))

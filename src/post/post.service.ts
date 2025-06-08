@@ -14,8 +14,8 @@ export class PostService {
     private readonly uploadService: UploadService,
   ) {}
 
-  async getAllPosts() {
-    return await this.prisma.post.findMany({
+  async getAllPosts(currentUserId: string) {
+    const posts = await this.prisma.post.findMany({
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -24,11 +24,18 @@ export class PostService {
         createdAt: true,
         author: {
           select: {
+            id: true,
             username: true,
             profile: {
               select: {
                 photo: true,
               },
+            },
+            followers: {
+              where: {
+                followerId: currentUserId,
+              },
+              select: { id: true },
             },
           },
         },
@@ -38,10 +45,37 @@ export class PostService {
             comments: true,
           },
         },
+        likes: {
+          where: {
+            userId: currentUserId,
+          },
+          select: {
+            id: true,
+          },
+        },
       },
     });
+
+    return posts.map((post) => {
+      const isLiked = post.likes.length > 0;
+      const isFollowed = post.author.followers.length > 0;
+
+      // убираем лишние поля
+      const { likes, author, ...rest } = post;
+      const { followers, ...cleanAuthor } = author;
+
+      return {
+        ...rest,
+        isLiked,
+        author: {
+          ...cleanAuthor,
+          isFollowed,
+        },
+      };
+    });
   }
-  async getPostById(id: string) {
+
+  async getPostById(id: string, currentUserId: string) {
     const post = await this.prisma.post.findFirst({
       where: { id },
       select: {
@@ -51,7 +85,7 @@ export class PostService {
         createdAt: true,
         comments: {
           orderBy: {
-            createdAt: "desc", // или "asc" — по возрастанию
+            createdAt: "desc",
           },
           select: {
             id: true,
@@ -76,17 +110,32 @@ export class PostService {
         },
         author: {
           select: {
+            id: true,
             username: true,
             profile: {
               select: {
                 photo: true,
               },
             },
+            followers: {
+              where: {
+                followerId: currentUserId,
+              },
+              select: { id: true },
+            },
           },
         },
         _count: {
           select: {
             likes: true,
+          },
+        },
+        likes: {
+          where: {
+            userId: currentUserId,
+          },
+          select: {
+            id: true,
           },
         },
       },
@@ -96,7 +145,20 @@ export class PostService {
       throw new NotFoundException();
     }
 
-    return post;
+    const isLiked = post.likes.length > 0;
+    const isFollowed = post.author.followers.length > 0;
+
+    const { likes, author, ...rest } = post;
+    const { followers, ...cleanAuthor } = author;
+
+    return {
+      ...rest,
+      isLiked,
+      author: {
+        ...cleanAuthor,
+        isFollowed,
+      },
+    };
   }
 
   async createPost(data: ICreatePost) {

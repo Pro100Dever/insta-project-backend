@@ -1,14 +1,31 @@
-import { Controller, Get, Param, ParseUUIDPipe, Query } from "@nestjs/common";
-
+import {
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
 import { UserService } from "./user.service";
+
+interface IUserReq extends Request {
+  user: JwtPl;
+}
 
 @Controller("users") // базовый путь для всего контроллера
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(AuthGuard("jwt"))
   @Get(":id")
-  async getUserById(@Param("id", new ParseUUIDPipe()) id: string) {
-    return await this.userService.findById(id);
+  async getUserById(
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @Request() req: IUserReq,
+  ) {
+    return await this.userService.findById(id, req.user?.sub);
   }
 
   @Get()

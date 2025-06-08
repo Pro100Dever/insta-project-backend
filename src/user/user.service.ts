@@ -5,9 +5,9 @@ import { PrismaService } from "src/prisma/prisma.service";
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: string) {
+  async findById(viewedUserId: string, currentUserId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id: viewedUserId },
       select: {
         id: true,
         username: true,
@@ -19,10 +19,24 @@ export class UserService {
             about: true,
           },
         },
+        followers: {
+          where: {
+            followerId: currentUserId,
+          },
+          select: { id: true },
+        },
       },
     });
     if (!user) throw new NotFoundException("User not found");
-    return user;
+
+    const isFollowed: boolean = user.followers.length > 0;
+    // удаляем followers из финального объекта
+    const { followers, ...rest } = user;
+
+    return {
+      ...rest,
+      isFollowed,
+    };
   }
 
   async searchUsers(search: string, limit = 10) {
