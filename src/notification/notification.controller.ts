@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Request } from "@nestjs/common";
+import { Controller, Get, Param, Patch, Request } from "@nestjs/common";
 import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
 import { NotificationService } from "./notification.service";
 
