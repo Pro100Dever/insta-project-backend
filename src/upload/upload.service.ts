@@ -1,9 +1,18 @@
 import { Storage } from "@google-cloud/storage";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import * as fs from "fs";
 import * as path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { MulterFile } from "./upload.controller";
+
+export interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+}
 
 @Injectable()
 export class UploadService {
@@ -12,16 +21,19 @@ export class UploadService {
 
   constructor(private config: ConfigService) {
     const projectId = config.get<string>("GCS_PROJECT_ID");
-    const credentialsJson = config.get<string>("GCS_CREDENTIALS_JSON");
     const bucketName = config.get<string>("GCS_BUCKET_NAME");
+    // const credentialsJson = config.get<string>("GCS_CREDENTIALS_PATH");
+    const credentialsPath = config.get<string>("GCS_CREDENTIALS_PATH");
 
-    if (!projectId || !credentialsJson || !bucketName) {
+    if (!projectId || !credentialsPath || !bucketName) {
       throw new Error("GCS environment variables are not set properly.");
     }
-
+    //  const credentials = JSON.parse(credentialsJson)
+    const credentialsJson = fs.readFileSync(credentialsPath, "utf-8");
     const credentials = JSON.parse(credentialsJson) as {
       client_email: string;
       private_key: string;
+      [key: string]: any;
     };
 
     this.storage = new Storage({

@@ -15,7 +15,6 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
-import { MulterFile } from "src/upload/upload.controller";
 import { UploadService } from "../upload/upload.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
@@ -23,6 +22,14 @@ import { PostService } from "./post.service";
 
 interface IPostReq extends Request {
   user: JwtPl;
+}
+export interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
 }
 
 @Controller("posts")
