@@ -31,6 +31,7 @@ export class UserService {
 
     const isFollowed: boolean = user.followers.length > 0;
     // удаляем followers из финального объекта
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { followers, ...rest } = user;
 
     return {

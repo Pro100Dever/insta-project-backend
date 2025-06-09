@@ -38,7 +38,8 @@ import { LocalStrategy } from "./strategies/local.strategies"; // Локальн
   ],
 
   exports: [
-    AuthService, // Экспортируем сервис аутентификации, чтобы другие модули могли его использовать
+    AuthService,
+    JwtModule, // Экспортируем сервис аутентификации, чтобы другие модули могли его использовать
   ],
 })
 export class AuthModule {}

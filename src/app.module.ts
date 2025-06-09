@@ -2,6 +2,9 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { MailModule } from "./auth/mail/mail.module";
+import { ChatGateway } from "./chat/chat.gateway";
+import { ChatModule } from "./chat/chat.module";
+import { ChatService } from "./chat/chat.service";
 import { CommentModule } from "./comment/comment.module";
 import { FollowModule } from "./follow/follow.module";
 import { LikeModule } from "./like/like.module";
@@ -28,6 +31,8 @@ import { UserModule } from "./user/user.module";
     NotificationModule,
     CommentModule,
     LikeModule,
+    ChatModule,
   ],
+  providers: [ChatService, ChatGateway],
 })
 export class AppModule {}

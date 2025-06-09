@@ -4,20 +4,20 @@ import { IsOptional, IsString, Length, ValidateNested } from "class-validator";
 class UpdateProfileDataDto {
   @IsOptional()
   @IsString()
-  photo: string;
+  photo!: string;
 
   @IsOptional()
-  website: string | null;
+  website!: string | null;
 
   @IsOptional()
-  about: string | null;
+  about!: string | null;
 }
 
 export class UpdateProfileDto {
   @IsOptional()
   @Length(4, 50)
   @IsString()
-  username: string;
+  username!: string;
 
   @IsOptional()
   @ValidateNested()

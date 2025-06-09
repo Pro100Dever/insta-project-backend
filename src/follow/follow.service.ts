@@ -72,6 +72,7 @@ export class FollowService {
         },
       });
       return { message: "Подписка отменена" };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: unknown) {
       throw new BadRequestException("Вы не подписаны на этого пользователя");
     }
