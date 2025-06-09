@@ -3,6 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { EntityType, NotificationType } from "generated/prisma";
+import { NotificationService } from "src/notification/notification.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UploadService } from "../upload/upload.service";
 import { ICreatePost, IUpdatePost } from "./interfaces/post.interfaces";
@@ -12,6 +14,7 @@ export class PostService {
   constructor(
     private prisma: PrismaService,
     private readonly uploadService: UploadService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async getAllPosts(currentUserId: string) {
@@ -162,16 +165,29 @@ export class PostService {
   }
 
   async createPost(data: ICreatePost) {
-    const post = await this.prisma.post.findUnique({
-      where: { id: data.authorId },
+    // Создаём пост
+    const createdPost = await this.prisma.post.create({ data });
+
+    // Получаем подписчиков автора
+    const followers = await this.prisma.follow.findMany({
+      where: { followingId: data.authorId },
+      select: { followerId: true },
     });
-    if (!post) {
-      throw new NotFoundException("Пост не найден");
+
+    // Отправляем уведомления подписчикам
+    for (const follower of followers) {
+      if (follower.followerId !== data.authorId) {
+        await this.notificationService.createNotification({
+          fromUserId: data.authorId,
+          toUserId: follower.followerId,
+          type: NotificationType.POST,
+          entityType: EntityType.POST,
+          entityId: createdPost.id,
+        });
+      }
     }
-    if (post.authorId !== data.authorId) {
-      throw new ForbiddenException("Вы не можете удалить чужой пост");
-    }
-    return this.prisma.post.create({ data });
+
+    return createdPost;
   }
 
   async updatePost(postId: string, postDto: IUpdatePost, userId: string) {

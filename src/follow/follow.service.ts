@@ -3,11 +3,16 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { EntityType, NotificationType } from "generated/prisma";
+import { NotificationService } from "src/notification/notification.service";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class FollowService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async followUser(followerId: string, followingId: string) {
     // Нельзя подписаться на самого себя
@@ -38,11 +43,21 @@ export class FollowService {
     // Создаем новую запись подписки
     await this.prisma.follow.create({
       data: {
-        followerId, // ID текущего юзера (тот, кто подписывается)
-        followingId, // ID цели подписки (на кого подписываются)
+        followerId,
+        followingId,
       },
     });
-    // Всё, подписка успешно создана — можно вернуть что-то при необходимости (например, сообщение или followId)
+
+    // Отправляем уведомление тому, на кого подписались (если это не сам себя)
+    if (followerId !== followingId) {
+      await this.notificationService.createNotification({
+        fromUserId: followerId,
+        toUserId: followingId,
+        type: NotificationType.FOLLOW,
+        entityType: EntityType.NONE,
+      });
+    }
+
     return { message: "Подписка оформлена" };
   }
 

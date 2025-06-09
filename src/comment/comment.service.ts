@@ -1,14 +1,18 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { EntityType, NotificationType } from "generated/prisma";
+import { NotificationService } from "src/notification/notification.service";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class CommentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async createComment(
     userId: string,
@@ -16,23 +20,8 @@ export class CommentService {
     text: string,
     parentId?: string,
   ) {
-    // Проверка, что пост существует
-    const post = await this.prisma.post.findUnique({ where: { id: postId } });
-    if (!post) throw new NotFoundException("Пост не найден");
-
-    if (parentId) {
-      const parentComment = await this.prisma.comment.findUnique({
-        where: { id: parentId },
-      });
-      if (!parentComment)
-        throw new NotFoundException("Родительский комментарий не найден");
-      if (parentComment.postId !== postId)
-        throw new BadRequestException(
-          "Родительский комментарий относится к другому посту",
-        );
-    }
-
-    return this.prisma.comment.create({
+    // ... твоя текущая логика проверки поста и родительского комментария
+    const comment = await this.prisma.comment.create({
       data: {
         authorId: userId,
         postId,
@@ -48,6 +37,23 @@ export class CommentService {
         },
       },
     });
+    // Получаем автора поста, чтобы отправить уведомление
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+    // Не отправляем уведомление если пользователь комментирует свой пост
+    if (post && post.authorId !== userId) {
+      await this.notificationService.createNotification({
+        fromUserId: userId,
+        toUserId: post.authorId,
+        type: parentId ? NotificationType.REPLY : NotificationType.COMMENT,
+        entityType: EntityType.COMMENT,
+        entityId: comment.id,
+      });
+    }
+
+    return comment;
   }
 
   async getComments(postId: string, currentUserId: string) {

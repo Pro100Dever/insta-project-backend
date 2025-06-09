@@ -156,6 +156,7 @@ enum NotificationType {
   COMMENT
   REPLY
   FOLLOW
+  POST
 }
 enum EntityType {
   POST

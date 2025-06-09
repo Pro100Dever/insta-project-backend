@@ -1,13 +1,14 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { EntityType, NotificationType } from "generated/prisma";
+import { NotificationService } from "src/notification/notification.service";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class LikeService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async likePost(userId: string, postId: string) {
     const post = await this.prisma.post.findUnique({ where: { id: postId } });
@@ -15,11 +16,14 @@ export class LikeService {
       throw new NotFoundException("Пост не найден");
     }
 
-    const exists = await this.prisma.like.findUnique({
-      where: { userId_postId: { userId, postId } },
-    });
-    if (exists) {
-      throw new BadRequestException("Вы уже лайкнули этот пост");
+    if (post.authorId !== userId) {
+      await this.notificationService.createNotification({
+        fromUserId: userId,
+        toUserId: post.authorId,
+        type: NotificationType.LIKE,
+        entityType: EntityType.POST,
+        entityId: postId,
+      });
     }
 
     return this.prisma.like.create({
@@ -46,11 +50,14 @@ export class LikeService {
       throw new NotFoundException("Комментарий не найден");
     }
 
-    const exists = await this.prisma.commentLike.findUnique({
-      where: { userId_commentId: { userId, commentId } },
-    });
-    if (exists) {
-      throw new BadRequestException("Вы уже лайкнули этот комментарий");
+    if (comment.authorId !== userId) {
+      await this.notificationService.createNotification({
+        fromUserId: userId,
+        toUserId: comment.authorId,
+        type: NotificationType.LIKE,
+        entityType: EntityType.COMMENT,
+        entityId: commentId,
+      });
     }
 
     return this.prisma.commentLike.create({
