@@ -9,5 +9,5 @@ export class UpdatePostDto extends PartialType(CreatePostDto) {
 
   @IsOptional()
   @IsString()
-  mediaUrl: string;
+  mediaUrl!: string;
 }

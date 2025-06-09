@@ -215,7 +215,7 @@ export class PostService {
   async deletePost(postId: string, userId: string) {
     const post = await this.prisma.post.findUnique({
       where: { id: postId },
-      select: { authorId: true },
+      select: { authorId: true, mediaUrl: true },
     });
 
     if (!post) {

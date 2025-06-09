@@ -7,5 +7,5 @@ export class CreatePostDto {
   text?: string;
 
   @IsString()
-  mediaUrl: string;
+  mediaUrl!: string;
 }
