@@ -20,6 +20,18 @@ export class CommentService {
     text: string,
     parentId?: string,
   ) {
+    const chekPost = await this.prisma.post.findUnique({
+      where: { id: postId },
+    });
+    if (!chekPost) throw new NotFoundException("Пост не найден");
+
+    if (parentId) {
+      const parentComment = await this.prisma.comment.findUnique({
+        where: { id: parentId },
+      });
+      if (!parentComment)
+        throw new NotFoundException("Родительский комментарий не найден");
+    }
     // ... твоя текущая логика проверки поста и родительского комментария
     const comment = await this.prisma.comment.create({
       data: {
