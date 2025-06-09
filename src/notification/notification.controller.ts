@@ -1,8 +1,11 @@
-import { Controller, Get, Param, Patch, Request } from "@nestjs/common";
+import { Controller, Get, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
 import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
+import { INotification } from "./interfaces/get-notification.dto";
 import { NotificationService } from "./notification.service";
 
-interface INotiReq extends Request {
+export interface INotiReq extends Request {
   user: JwtPl;
 }
 
@@ -10,13 +13,11 @@ interface INotiReq extends Request {
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
+  @UseGuards(AuthGuard("jwt"))
   @Get()
-  async getNotifications(@Request() req: INotiReq) {
-    return this.notificationsService.getNotificationsForUser(req.user.sub);
-  }
-  @Patch(":id/read")
-  async markAsRead(@Param("id") id: number, @Request() req: INotiReq) {
-    // можно проверить, что уведомление принадлежит этому пользователю
-    return this.notificationsService.markAsRead(id, req.user.sub);
+  async getMyNotifications(
+    @CurrentUser() user: INotiReq,
+  ): Promise<INotification[]> {
+    return this.notificationService.getUserNotifications(user.user.sub);
   }
 }

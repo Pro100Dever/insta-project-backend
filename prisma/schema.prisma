@@ -136,10 +136,10 @@ model CommentLike {
 
 model Notification {
   id         String      @id @default(uuid())
-  type       String
+  type       NotificationType
   fromUserId String
   toUserId   String
-  entityType String?
+  entityType EntityType?
   entityId   String?     // может быть id поста, комментария и т.п.
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
@@ -149,4 +149,16 @@ model Notification {
 
   @@index([toUserId, isRead])       // индекс для быстрого поиска непрочитанных уведомлений у пользователя
   @@index([toUserId, createdAt])    // индекс для сортировки уведомлений по дате у пользователя
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  REPLY
+  FOLLOW
+}
+enum EntityType {
+  POST
+  COMMENT
+  NONE
 }
