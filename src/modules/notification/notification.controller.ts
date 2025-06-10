@@ -16,8 +16,8 @@ export class NotificationController {
   @UseGuards(AuthGuard("jwt"))
   @Get()
   async getMyNotifications(
-    @CurrentUser() user: INotiReq,
+    @CurrentUser() req: INotiReq,
   ): Promise<INotification[]> {
-    return this.notificationService.getUserNotifications(user.user.sub);
+    return this.notificationService.getUserNotifications(req.user.sub);
   }
 }

@@ -15,32 +15,36 @@ export class FollowService {
   ) {}
 
   async followUser(followerId: string, followingId: string) {
-    // Нельзя подписаться на самого себя
     if (followerId === followingId) {
       throw new BadRequestException("Нельзя подписаться на самого себя");
     }
-    // Проверяем, существует ли пользователь, на которого хотят подписаться
+
+    const followerUser = await this.prisma.user.findUnique({
+      where: { id: followerId },
+    });
+    if (!followerUser) {
+      throw new NotFoundException(
+        "Пользователь, который подписывается, не найден",
+      );
+    }
+
     const targetUser = await this.prisma.user.findUnique({
       where: { id: followingId },
     });
-    // Если такого пользователя нет — кидаем ошибку
     if (!targetUser) {
       throw new NotFoundException("Пользователь не найден");
     }
-    // Проверяем, существует ли уже такая подписка (follower → following)
+
     const existingFollow = await this.prisma.follow.findUnique({
       where: {
-        followerId_followingId: {
-          followerId, // текущий юзер
-          followingId, // цель подписки
-        },
+        followerId_followingId: { followerId, followingId },
       },
     });
-    // Если такая подписка уже есть — кидаем ошибку
+
     if (existingFollow) {
       throw new BadRequestException("Вы уже подписаны на этого пользователя");
     }
-    // Создаем новую запись подписки
+
     await this.prisma.follow.create({
       data: {
         followerId,
@@ -48,15 +52,14 @@ export class FollowService {
       },
     });
 
-    // Отправляем уведомление тому, на кого подписались (если это не сам себя)
-    if (followerId !== followingId) {
-      await this.notificationService.createNotification({
-        fromUserId: followerId,
-        toUserId: followingId,
-        type: NotificationType.FOLLOW,
-        entityType: EntityType.NONE,
-      });
-    }
+    // Отправляем уведомления подписчикам
+
+    await this.notificationService.createNotification({
+      fromUserId: followerId,
+      toUserId: followingId,
+      type: NotificationType.FOLLOW,
+      entityType: EntityType.NONE,
+    });
 
     return { message: "Подписка оформлена" };
   }

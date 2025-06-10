@@ -62,6 +62,7 @@ export class CommentController {
     @Param("id", new ParseUUIDPipe()) commentId: string,
     @Request() req: ICommentReq,
   ) {
-    return this.commentService.deleteComment(commentId, req.user.sub);
+    await this.commentService.deleteComment(commentId, req.user.sub);
+    return { message: "Post was deleted" };
   }
 }

@@ -5,14 +5,21 @@ import {
 } from "@nestjs/common";
 import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
 import { PrismaService } from "src/prisma/prisma.service";
+import { UploadService } from "src/upload/upload.service";
 import { IUpdateProfile } from "./interfaces/profile.interface";
 
 @Injectable()
 export class ProfileService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly uploadService: UploadService,
+  ) {}
 
-  async findMe(user: JwtPl) {
-    const userId = user.sub;
+  async findMe(userId: string) {
+    if (!userId) {
+      throw new Error("userId is required");
+    }
+
     const myProfile = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -48,7 +55,7 @@ export class ProfileService {
     };
   }
 
-  async update(user: JwtPl, dto: IUpdateProfile) {
+  async update(user: JwtPl, dto: IUpdateProfile, mediaUrl: string | undefined) {
     const userId = user.sub;
 
     // Проверка существования пользователя
@@ -67,6 +74,9 @@ export class ProfileService {
       }
     }
 
+    if (dto.profile?.photo && mediaUrl) {
+      await this.uploadService.deleteFile(dto.profile.photo);
+    }
     // Обновляем пользователя и профиль одним запросом
     await this.prisma.user.update({
       where: { id: userId },
@@ -75,7 +85,7 @@ export class ProfileService {
         profile: dto.profile
           ? {
               update: {
-                photo: dto.profile.photo,
+                photo: mediaUrl ? mediaUrl : undefined,
                 website: dto.profile.website,
                 about: dto.profile.about,
               },

@@ -5,7 +5,7 @@ import { CreatePostDto } from "./create-post.dto";
 export class UpdatePostDto extends PartialType(CreatePostDto) {
   @IsOptional()
   @IsString()
-  text?: string;
+  text?: string | null;
 
   @IsOptional()
   @IsString()

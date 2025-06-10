@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -65,6 +66,9 @@ export class PostController {
     @UploadedFile() file: MulterFile,
   ) {
     const mediaUrl = await this.uploadService.uploadFile(file);
+    if (!mediaUrl) {
+      throw new BadRequestException({ message: "Need media" });
+    }
     return this.postService.createPost({
       ...postDto,
       mediaUrl,

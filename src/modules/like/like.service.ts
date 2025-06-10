@@ -26,7 +26,7 @@ export class LikeService {
       });
     }
 
-    return this.prisma.like.create({
+    await this.prisma.like.create({
       data: { userId, postId },
     });
   }
@@ -37,7 +37,7 @@ export class LikeService {
       throw new NotFoundException("Пост не найден");
     }
 
-    return this.prisma.like.delete({
+    await this.prisma.like.delete({
       where: { userId_postId: { userId, postId } },
     });
   }
@@ -60,7 +60,7 @@ export class LikeService {
       });
     }
 
-    return this.prisma.commentLike.create({
+    await this.prisma.commentLike.create({
       data: { userId, commentId },
     });
   }
@@ -73,7 +73,7 @@ export class LikeService {
       throw new NotFoundException("Комментарий не найден");
     }
 
-    return this.prisma.commentLike.delete({
+    await this.prisma.commentLike.delete({
       where: { userId_commentId: { userId, commentId } },
     });
   }

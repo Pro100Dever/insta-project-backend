@@ -17,7 +17,7 @@ export class UpdateProfileDto {
   @IsOptional()
   @Length(4, 50)
   @IsString()
-  username!: string;
+  username?: string;
 
   @IsOptional()
   @ValidateNested()

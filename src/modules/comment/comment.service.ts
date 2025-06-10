@@ -127,7 +127,7 @@ export class CommentService {
     if (comment.authorId !== userId)
       throw new ForbiddenException("Нет доступа");
 
-    return this.prisma.comment.delete({
+    await this.prisma.comment.delete({
       where: { id: commentId },
     });
   }

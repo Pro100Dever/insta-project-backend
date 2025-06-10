@@ -3,8 +3,5 @@ import { IsOptional, IsString } from "class-validator";
 export class CreatePostDto {
   @IsOptional()
   @IsString()
-  text?: string;
-
-  @IsString()
-  mediaUrl!: string;
+  text?: string | null;
 }

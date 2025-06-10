@@ -1,9 +1,9 @@
 export interface ICreatePost {
-  text?: string;
+  text?: string | null;
   mediaUrl: string;
   authorId: string;
 }
 export interface IUpdatePost {
-  text?: string;
-  mediaUrl?: string;
+  text?: string | null;
+  mediaUrl?: string | undefined;
 }
