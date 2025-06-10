@@ -5,5 +5,5 @@ export interface ICreatePost {
 }
 export interface IUpdatePost {
   text?: string;
-  mediaUrl: string;
+  mediaUrl?: string;
 }
