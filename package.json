@@ -14,7 +14,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "studio": "prisma studio --port 5555 --schema=./prisma/schema.prisma"
+    "studio": "docker exec -it instagram_backend_container bunx prisma studio --hostname 0.0.0.0"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",
