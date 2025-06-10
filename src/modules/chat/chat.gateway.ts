@@ -10,7 +10,7 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
-import { getUserFromSocket } from "src/utils/socket-user";
+import { getUserFromSocket } from "src/common/utils/socket-user";
 import { ChatService } from "./chat.service";
 
 interface SocketWithUser extends Socket {
@@ -39,6 +39,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async handleDisconnect(_socket: Socket) {
     // можно логировать дисконнекты
   }

@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 import { JwtPl } from "src/auth/interfaces/jwtPl.interface";
-import { INotiReq } from "src/notification/notification.controller";
+import { INotiReq } from "src/modules/notification/notification.controller";
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): JwtPl | null => {

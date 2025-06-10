@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { NotificationService } from "src/notification/notification.service";
+import { NotificationService } from "src/modules/notification/notification.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UploadService } from "src/upload/upload.service";
 import { PostController } from "./post.controller";

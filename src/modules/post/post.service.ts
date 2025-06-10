@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { EntityType, NotificationType } from "generated/prisma";
-import { NotificationService } from "src/notification/notification.service";
+import { NotificationService } from "src/modules/notification/notification.service";
 import { PrismaService } from "src/prisma/prisma.service";
-import { UploadService } from "../upload/upload.service";
+import { UploadService } from "../../upload/upload.service";
 import { ICreatePost, IUpdatePost } from "./interfaces/post.interfaces";
 
 @Injectable()
