@@ -32,8 +32,8 @@ export class MailService {
         <p>If you did not request a password reset, simply ignore this email.</p>
       `,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: unknown) {
-      console.error("Error sending email:", error);
       throw new InternalServerErrorException("Error sending email");
     }
   }
@@ -51,8 +51,8 @@ export class MailService {
         <p>If you did not change your password, someone may have gained access to your account. Please, reset your password again</p>
       `,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: unknown) {
-      console.error("Error sending email:", error);
       throw new InternalServerErrorException("Error sending email");
     }
   }
