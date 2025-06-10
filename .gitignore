@@ -15,6 +15,7 @@ lerna-debug.log*
 # My custom
 bun.lock
 gcs-credentials.json
+generated
 
 # OS
 .DS_Store
