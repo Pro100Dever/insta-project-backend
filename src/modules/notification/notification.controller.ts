@@ -29,6 +29,7 @@ export class NotificationController {
     return this.notificationService.getUserNotifications(req.user.sub);
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Patch(":id")
   async markAsRead(
     @Param("id", new ParseUUIDPipe()) notificationId: string,
