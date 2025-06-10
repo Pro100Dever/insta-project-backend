@@ -10,11 +10,15 @@ COPY bun.lock ./
 # Устанавливаем зависимости через bun
 RUN bun install
 
+RUN apt-get update && apt-get install -y openssl libssl-dev
+COPY prisma ./prisma
+
 # Генерируем призму через bunx
 RUN bunx prisma generate
 
 # Копируем весь проект
 COPY . .
+
 
 # Собираем проект, если есть сборка (если не нужен - можно убрать)
 RUN bun run build
