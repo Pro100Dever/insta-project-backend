@@ -10,6 +10,9 @@ COPY bun.lock ./
 # Устанавливаем зависимости через bun
 RUN bun install
 
+# Генерируем призму через bunx
+RUN bunx prisma generate
+
 # Копируем весь проект
 COPY . .
 
