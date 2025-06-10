@@ -40,7 +40,7 @@ export class UserService {
     };
   }
 
-  async searchUsers(search: string, limit = 10) {
+  async searchUsers(search: string, limit: number) {
     return this.prisma.user.findMany({
       where: {
         OR: [
