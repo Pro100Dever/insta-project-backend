@@ -21,12 +21,12 @@ interface IChatReq extends Request {
   user: JwtPl;
 }
 
-@UseGuards(AuthGuard("jwt"))
 @Controller("chats")
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   // Создать чат с другим пользователем
+  @UseGuards(AuthGuard("jwt"))
   @Post("create")
   @UsePipes(new ValidationPipe())
   async createChat(@Body() dto: CreateChatDto, @Request() req: IChatReq) {
@@ -35,6 +35,7 @@ export class ChatController {
   }
 
   // Получить все чаты пользователя
+  @UseGuards(AuthGuard("jwt"))
   @Get()
   @UsePipes(new ValidationPipe())
   async getUserChats(@Request() req: IChatReq) {
@@ -43,6 +44,7 @@ export class ChatController {
   }
 
   // Отправить сообщение в чат
+  @UseGuards(AuthGuard("jwt"))
   @Post("message")
   @UsePipes(new ValidationPipe())
   async sendMessage(@Body() dto: SendMessageDto, @Request() req: IChatReq) {
@@ -55,6 +57,7 @@ export class ChatController {
   }
 
   // Получить сообщения чата с пагинацией
+  @UseGuards(AuthGuard("jwt"))
   @Get(":chatId/messages")
   @UsePipes(new ValidationPipe())
   async getMessages(
@@ -68,6 +71,7 @@ export class ChatController {
   }
 
   // Пометить сообщения в чате прочитанными
+  @UseGuards(AuthGuard("jwt"))
   @Post(":chatId/mark-read")
   @UsePipes(new ValidationPipe())
   async markMessagesAsRead(
@@ -80,6 +84,7 @@ export class ChatController {
   }
 
   // Удалить сообщение (только своё)
+  @UseGuards(AuthGuard("jwt"))
   @Delete("message/:messageId")
   @UsePipes(new ValidationPipe())
   async deleteMessage(
@@ -92,6 +97,7 @@ export class ChatController {
   }
 
   // Удалить чат для пользователя (мягкое удаление)
+  @UseGuards(AuthGuard("jwt"))
   @Delete(":chatId")
   @UsePipes(new ValidationPipe())
   async deleteChatForUser(
