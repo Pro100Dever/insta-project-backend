@@ -70,6 +70,7 @@ export class AuthService {
     if (!passwordMatches) return null;
 
     // Возвращаем пользовательские данные без пароля
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...result } = user;
     return result;
   }

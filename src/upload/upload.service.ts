@@ -44,9 +44,11 @@ export class UploadService {
     this.bucketName = bucketName;
   }
 
-  async uploadFile(file: MulterFile): Promise<string> {
+  async uploadFile(file: MulterFile): Promise<string | undefined> {
+    if (!file) {
+      return;
+    }
     if (
-      !file ||
       typeof file.originalname !== "string" ||
       !(file.buffer instanceof Buffer) ||
       typeof file.mimetype !== "string"

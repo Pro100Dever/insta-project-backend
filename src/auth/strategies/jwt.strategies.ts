@@ -23,6 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   validate(payload: JwtPl) {
     // payload — это данные из токена (например, userId и email)
     // Можно проверить пользователя в базе, но часто просто возвращаем payload
-    return { userId: payload.sub, username: payload.username };
+    return { sub: payload.sub, username: payload.username };
   }
 }

@@ -2,15 +2,18 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { MailModule } from "./auth/mail/mail.module";
-import { CommentModule } from "./comment/comment.module";
-import { FollowModule } from "./follow/follow.module";
-import { LikeModule } from "./like/like.module";
-import { NotificationModule } from "./notification/notification.module";
-import { PostModule } from "./post/post.module";
+import { ChatGateway } from "./modules/chat/chat.gateway";
+import { ChatModule } from "./modules/chat/chat.module";
+import { ChatService } from "./modules/chat/chat.service";
+import { CommentModule } from "./modules/comment/comment.module";
+import { FollowModule } from "./modules/follow/follow.module";
+import { LikeModule } from "./modules/like/like.module";
+import { NotificationModule } from "./modules/notification/notification.module";
+import { PostModule } from "./modules/post/post.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { ProfileModule } from "./profile/profile.module";
+import { ProfileModule } from "./modules/profile/profile.module";
 import { UploadModule } from "./upload/upload.module";
-import { UserModule } from "./user/user.module";
+import { UserModule } from "./modules/user/user.module";
 
 @Module({
   imports: [
@@ -28,6 +31,8 @@ import { UserModule } from "./user/user.module";
     NotificationModule,
     CommentModule,
     LikeModule,
+    ChatModule,
   ],
+  providers: [ChatService, ChatGateway],
 })
 export class AppModule {}
