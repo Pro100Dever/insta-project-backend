@@ -64,10 +64,15 @@ export class AuthService {
       },
     });
 
-    if (!user) return null;
+    if (!user) {
+      throw new BadRequestException({ error: "Неправильный логин или пароль" });
+    }
 
     const passwordMatches = await bcrypt.compare(password, user.password);
-    if (!passwordMatches) return null;
+
+    if (!passwordMatches) {
+      throw new BadRequestException({ error: "Неправильный логин или пароль" });
+    }
 
     // Возвращаем пользовательские данные без пароля
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

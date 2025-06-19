@@ -10,6 +10,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  app.enableCors({
+    origin: "http://localhost:5173", // твой фронтенд
+    credentials: true, // если используются куки / заголовки авторизации
+  });
 
   await app.listen(process.env.PORT ?? 3000);
 }

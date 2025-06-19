@@ -18,7 +18,7 @@ export class MailService {
 
   async sendResetPasswordEmail(to: string, token: string) {
     const FRONTEND_URL = this.config.get<string>("FRONTEND_URL");
-    const resetUrl = `${FRONTEND_URL}/reset-password?token=${token}`; //токен на фронт идет через парам но в ресет пас его пихаем в боди
+    const resetUrl = `${FRONTEND_URL}/new-password?token=${token}`; //токен на фронт идет через парам но в ресет пас его пихаем в боди
 
     try {
       await this.transporter.sendMail({
