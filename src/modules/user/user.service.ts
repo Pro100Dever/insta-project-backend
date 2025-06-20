@@ -33,9 +33,16 @@ export class UserService {
     // удаляем followers из финального объекта
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { followers, ...rest } = user;
-
+    const [followersCount, followingCount, postsCount] = await Promise.all([
+      this.prisma.follow.count({ where: { followingId: viewedUserId } }),
+      this.prisma.follow.count({ where: { followerId: viewedUserId } }),
+      this.prisma.post.count({ where: { authorId: viewedUserId } }),
+    ]);
     return {
       ...rest,
+      followersCount,
+      followingCount,
+      postsCount,
       isFollowed,
     };
   }
